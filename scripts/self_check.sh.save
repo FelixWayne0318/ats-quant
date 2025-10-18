@@ -1,0 +1,2 @@
+# 粘贴下面完整代码，保存后：
+chmod +x /opt/ats-quant/scripts/self_check.sh && /opt/ats-quant/scripts/self_check.sh

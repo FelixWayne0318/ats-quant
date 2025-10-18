@@ -1,0 +1,53 @@
+[1mATS 全面自检启动：2025-10-17 23:08:35 (UTC)[0m
+APP_DIR=/opt/ats-quant
+ENV_FILE=/opt/ats-quant/.env
+
+[1m[36m0) 基础命令检查[0m
+[32m✔ PASS[0m  找到命令：git
+[32m✔ PASS[0m  找到命令：curl
+[32m✔ PASS[0m  找到命令：openssl
+[32m✔ PASS[0m  找到命令：docker
+[32m✔ PASS[0m  Compose 可用：docker compose
+
+[1m[36m1) GitHub 与仓库[0m
+[32m✔ PASS[0m  SSH 连接 github.com 认证成功（Deploy Key 正常）
+[32m✔ PASS[0m  origin 正确：git@github.com:FelixWayne0318/ats-quant.git
+[32m✔ PASS[0m  git fetch 正常
+[32m✔ PASS[0m  当前分支：main；commit：262da8b
+
+[1m[36m2) .env 参数（脱敏展示）[0m
+[32m✔ PASS[0m  TELEGRAM_BOT_TOKEN: 628015***QSSw
+[32m✔ PASS[0m  TELEGRAM_CHAT_ID_PRIMARY: -1001951843401
+[32m✔ PASS[0m  BINANCE_API_KEY: fWLZHY***VTZi
+[32m✔ PASS[0m  BINANCE_API_SECRET: g6Qy00***tW7x
+
+[1m[36m3) Telegram 推送测试[0m
+[32m✔ PASS[0m  Telegram sendMessage 成功（请在群内确认已收到）
+
+[1m[36m4) Binance USDT-M 连通性[0m
+[32m✔ PASS[0m  GET /fapi/v1/ping 正常
+[32m✔ PASS[0m  GET /fapi/v1/time 正常
+[31m✖ FAIL[0m  /fapi/v2/balance（签名）失败：检查 API 权限 / 受信任 IP / 服务器时间同步
+
+[1m[36m5) Docker / 服务状态[0m
+[32m✔ PASS[0m  Docker 已安装：Docker version 28.5.1, build e180ab8
+[32m✔ PASS[0m  Compose：Docker Compose version v2.40.1
+[32m✔ PASS[0m  容器运行中：ats-quant
+[32m✔ PASS[0m  容器日志包含关键启动/自检信息
+
+[1m[36m6) 自动更新（cron）[0m
+[32m✔ PASS[0m  已配置 cron 自动更新（包含 pull_and_restart.sh）
+
+[1m[36m7) 系统健康 / 网络[0m
+Filesystem      Size  Used Avail Use% Mounted on
+磁盘 / 已用 11G/52G（22%）
+内存 总:1.9Gi 已用:271Mi 空闲:95Mi
+                Time zone: Etc/UTC (UTC, +0000)
+System clock synchronized: yes
+出网 IP：139.180.157.152
+UFW 防火墙：
+
+[1m[36m8) SSH 部署密钥[0m
+[32m✔ PASS[0m  找到 Deploy Key（权限 私钥:600 公钥:644）
+
+[1m自检结束。若有 FAIL/WARN，按提示修复即可。[0m

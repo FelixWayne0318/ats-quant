@@ -1,0 +1,63 @@
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ printf "${BOLD}${CYAN}ATS 自检&修复 开始：%s (UTC)${RESET}\n" "$(date -u '+%F %T')"
+[?2004l[1m[36mATS 自检&修复 开始：2025-10-17 17:25:26 (UTC)[0m
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ echo "APP_DIR=$APP_DIR"
+[?2004lAPP_DIR=/opt/ats-quant
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ echo "ENV_FILE=$ENV_FILE"
+[?2004lENV_FILE=/opt/ats-quant/.env
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ # 0) 读取 .env（用于 Telegram 发送）
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ if read_env; then
+[?2004l[?2004h>   ok ".env 读取成功（脱敏）"
+[?2004l[?2004h>   [[ -n "${TELEGRAM_BOT_TOKEN:-}"      ]] && ok "TELEGRAM_BOT_TOKEN: $(mask "$TELEGRAM_BOT_TOKEN")" || warn "未配置 TELEGRAM_BOT_TOKEN"
+[?2004l[?2004h>   [[ -n "${TELEGRAM_CHAT_ID_PRIMARY:-}" ]] && ok "TELEGRAM_CHAT_ID_PRIMARY: ${TELEGRAM_CHAT_ID_PRIMARY}" || warn "未配置 TELEGRAM_CHAT_ID_PRIMARY"
+[?2004l[?2004h> else
+[?2004l[?2004h>   warn "未找到或无法读取 .env：$ENV_FILE（稍后仍继续）"
+[?2004l[?2004h> fi
+[?2004l[32m✔ PASS[0m  .env 读取成功（脱敏）
+[32m✔ PASS[0m  TELEGRAM_BOT_TOKEN: 628015***QSSw
+[32m✔ PASS[0m  TELEGRAM_CHAT_ID_PRIMARY: -1001951843401
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ tg_msg "🧪 ATS 自检&修复开始 ${TS} (UTC) | $(hostname)" >/dev/null 2>&1 || true
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ # 1) 基础环境 & OpenSSL
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ ttl "1) 基础命令"
+[?2004l
+[1m[36m1) 基础命令[0m
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ for c in git curl openssl; do
+[?2004l[?2004h>   if have "$c"; then ok "存在命令：$c"; else
+[?2004l[?2004h>     warn "缺少 $c，尝试安装…"
+[?2004l[?2004h>     sudo apt update -y >/dev/null 2>&1 || true
+[?2004l[?2004h>     sudo apt install -y "$c" >/dev/null 2>&1 && ok "已安装 $c" || fail "安装 $c 失败" [A
+[?2004l[?2004h>   fi
+[?2004l[?2004h> done
+[?2004l[32m✔ PASS[0m  存在命令：git
+[32m✔ PASS[0m  存在命令：curl
+[32m✔ PASS[0m  存在命令：openssl
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ # 2) 安装/修复 Docker + Compose
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ ttl "2) Docker & Compose"
+[?2004l
+[1m[36m2) Docker & Compose[0m
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ if have docker; then
+[?2004l[?2004h>   ok "Docker 已安装：$(docker --version 2>/dev/null)"
+[?2004l[?2004h> else
+[?2004l[?2004h>   warn "未检测到 docker，开始安装（官方源）…"
+[?2004l[?2004h>   sudo apt install -y ca-certificates curl gnupg lsb-release >/dev/null 2>&1 || true
+[?2004l[?2004h>   sudo install -m 0755 -d /etc/apt/keyrings || true
+[?2004l[?2004h>   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg >/dev/null 2>&1 || true
+[?2004l[?2004h>   echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \
+[?2004l[?2004h>     | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+[?2004l[?2004h>   sudo apt update -y >/dev/null 2>&1 || true
+[?2004l[?2004h>   if sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >/dev/null 2>&1; then
+[?2004l[?2004h>     ok "Docker CE 与 Compose 插件安装完成"
+[?2004l[?2004h>   else
+[?2004l[?2004h>     warn "官方源失败，回退安装 docker.io + docker-compose-plugin…"
+[?2004l[?2004h>     sudo apt install -y docker.io docker-compose-plugin >/dev/null 2>&1 && ok "已安装 docker.io / compose-plugin" || fail "docker 安装失败"
+[?2004l[?2004h>   fi
+[?2004l[?2004h>   sudo systemctl enable --now docker >/dev/null 2>&1 || true
+[?2004l[?2004h> fi
+[?2004l[33m⚠ WARN[0m  未检测到 docker，开始安装（官方源）…
+[32m✔ PASS[0m  Docker CE 与 Compose 插件安装完成
+[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ 
+[?2004l[?2004h]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [K]0;linuxuser@bn-bot-sg: ~[01;32mlinuxuser@bn-bot-sg[00m:[01;34m~[00m$ [?2004l[?2004l
