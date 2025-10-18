@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- ATS project additions ---
+backups/
+restore-*/
+logs/                    # 如你已写过 logs/，可跳过这一行（不重复也没关系）
+deploy/*.rendered.*.yaml
+deploy/*.backup.*.txt
