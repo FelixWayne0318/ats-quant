@@ -85,7 +85,7 @@ def scan_once():
 
 def main_loop():
     logger.add("reports/ats.log", rotation="10 MB", retention=5)
-    send_text("🚀 ATS QF v1.0 启动（模拟模式默认）")
+    send_text("🚀 ATS QF v1.2 启动（模拟模式默认）")
     heartbeat(BinanceFutures())
     while True:
         now=utcnow(); tgt=next_hour_plus_15s(now)
