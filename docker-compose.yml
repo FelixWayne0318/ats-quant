@@ -1,0 +1,11 @@
+services:
+  ats:
+    container_name: ats-quant
+    image: python:3.11-slim
+    working_dir: /app
+    env_file:
+      - .env
+    volumes:
+      - ./:/app:rw
+    entrypoint: ["/bin/bash","-lc","/app/docker/entrypoint.sh"]
+    restart: unless-stopped
