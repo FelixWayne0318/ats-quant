@@ -19,7 +19,7 @@ def zigzag(df: pd.DataFrame, atr_mult: float = 0.5) -> pd.Series:
     a = atr(df,14)
     piv = np.zeros(len(df), dtype=int)
     last_p, last_dir = df["close"].iloc[0], 0
-    for i,(c,tr) in enumerate(zip(df["close"], a.fillna(method="bfill"))):
+    for i,(c,tr) in enumerate(zip(df["close"], a.bfill())):
         if last_dir<=0 and c > last_p + atr_mult*tr: last_dir=1; piv[i]=1; last_p=c
         elif last_dir>=0 and c < last_p - atr_mult*tr: last_dir=-1; piv[i]=-1; last_p=c
     return pd.Series(piv, index=df.index)
