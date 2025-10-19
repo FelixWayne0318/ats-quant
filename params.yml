@@ -2,15 +2,15 @@ sampling:
   main_interval: 1h
   overlay_decay_hours: 2
 symbol_pool:
-  max_symbols: 18
+  max_symbols: 24
   min_quote_vol: 20000000
   base_pool_daily_size: 120
 scan:
-  max_symbols_per_scan: 54
-  per_symbol_pause_ms: 300
-  tickers_cache_sec: 600
+  max_symbols_per_scan: 90
+  per_symbol_pause_ms: 250
+  tickers_cache_sec: 900
 overlay:
-  top_movers: 30
+  top_movers: 40
 thresholds:
   trend:
     ema30_slope_min: 0.25
