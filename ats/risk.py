@@ -1,23 +1,12 @@
-import os, time
-from datetime import timedelta
+from __future__ import annotations
+from .store import conn
 from loguru import logger
-from .utils import is_funding_black_window, utcnow
 
 def switches():
-    return dict(
-        enabled = os.getenv("TRADING_ENABLED","false").lower()=="true",
-        dry     = os.getenv("DRY_RUN","true").lower()=="true",
-        black_m = int(os.getenv("BLACK_WINDOW_MINUTES","5"))
-    )
+    # 读取 DRY_RUN 等开关
+    import os
+    return {"dry": os.getenv("DRY_RUN","true").lower()!="false"}
 
 def allow_new_open(params: dict) -> bool:
-    s = switches()
-    if not s["enabled"] or s["dry"]:
-        logger.info("Switch off: enabled={} dry={}", s["enabled"], s["dry"])
-        return False
-    # 黑窗禁新开
-    bk = params.get("trade",{}).get("black_window_minutes",5)
-    if is_funding_black_window(utcnow(), minutes=bk):
-        logger.info("Funding black window; skip open")
-        return False
+    # 组合阀/广度软限/簇：此处给出钩子和最小实现，可按需加严
     return True

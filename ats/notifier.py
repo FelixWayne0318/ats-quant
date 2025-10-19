@@ -1,35 +1,21 @@
 import os, requests
 from loguru import logger
 
-BOT = os.getenv("TELEGRAM_BOT_TOKEN", "")
-CHAT = os.getenv("TELEGRAM_CHAT_ID_PRIMARY", "")
+BOT = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT = os.getenv("TELEGRAM_CHAT_ID_PRIMARY")
 
-def send_text(text: str, parse_mode: str = "Markdown") -> bool:
-    if not (BOT and CHAT):
+def _post(path, **data):
+    if not BOT or not CHAT:
         logger.warning("TELEGRAM env not set; skip notify.")
-        return False
-    url = f"https://api.telegram.org/bot{BOT}/sendMessage"
-    payload = {"chat_id": CHAT, "text": text, "parse_mode": parse_mode}
+        return
     try:
-        r = requests.post(url, data=payload, timeout=10)
-        if r.ok:
-            return True
-        logger.error(f"telegram error: {r.status_code} {r.text}")
+        requests.post(f"https://api.telegram.org/bot{BOT}{path}",
+                      data=dict(chat_id=CHAT, **data), timeout=10)
     except Exception as e:
-        logger.exception(e)
-    return False
+        logger.warning(f"telegram send failed: {e}")
 
-def send_file(path: str, caption: str = "") -> bool:
-    if not (BOT and CHAT):
-        logger.warning("TELEGRAM env not set; skip file.")
-        return False
-    url = f"https://api.telegram.org/bot{BOT}/sendDocument"
-    try:
-        with open(path, "rb") as f:
-            r = requests.post(url, data={"chat_id": CHAT, "caption": caption}, files={"document": f}, timeout=30)
-        if r.ok:
-            return True
-        logger.error(f"telegram file error: {r.status_code} {r.text}")
-    except Exception as e:
-        logger.exception(e)
-    return False
+def send_text(text: str):
+    _post("/sendMessage", text=text, parse_mode="Markdown")
+
+def send_text_plain(text: str):
+    _post("/sendMessage", text=text)

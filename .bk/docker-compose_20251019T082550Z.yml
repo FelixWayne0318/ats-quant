@@ -1,10 +1,11 @@
 version: "3.9"
 services:
   ats-quant:
-    build: .
+    image: python:3.11-slim
     container_name: ats-quant
     working_dir: /app
     volumes: [ "./:/app" ]
     env_file: [ ".env" ]
     environment: [ "TZ=UTC" ]
+    command: ["python","-u","-m","ats.app"]
     restart: unless-stopped

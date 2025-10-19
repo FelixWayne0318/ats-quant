@@ -1,16 +1,22 @@
-from loguru import logger
+from __future__ import annotations
+import pandas as pd, numpy as np
 
-def build_base_pool_from_24h(tickers: list, max_symbols: int, min_quote_vol: float):
-    # 从 24hr 排行选主力 USDT 本位合约
-    rows = []
-    for x in tickers:
-        s = x.get("symbol","")
-        if not s.endswith("USDT"): continue
-        if "PERP" in s: continue  # 交割合约可能带特殊后缀，简化：只留标准 USDT
-        qv = float(x.get("quoteVolume", 0) or 0.0)
-        if qv < min_quote_vol: continue
-        rows.append((s, qv))
-    rows.sort(key=lambda t: t[1], reverse=True)
-    picks = [s for s,_ in rows[:max_symbols]]
-    logger.info("Base pool size={} (min_quote_vol={})", len(picks), min_quote_vol)
-    return picks
+def _z24(item):
+    try:
+        p = float((item.get("priceChangePercent") or "0").replace("%",""))
+        return abs(p)
+    except: return 0.0
+
+def build_base_pool_from_24h(t24: list, size: int, min_quote_vol: float):
+    arr = []
+    for it in t24:
+        try:
+            if not it.get("symbol","").endswith("USDT"): continue
+            qv = float(it.get("quoteVolume") or 0.0)
+            if qv < float(min_quote_vol): continue
+            if _z24(it) < 1.0: continue
+            arr.append((it["symbol"], qv, _z24(it)))
+        except: continue
+    # 先按 z_24，次序按成交额
+    arr.sort(key=lambda x: (x[2], x[1]), reverse=True)
+    return [a[0] for a in arr[:int(size)]]

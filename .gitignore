@@ -1,14 +1,7 @@
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-*.log
-
 .env
 db/
 data/
 reports/
-backups/
-*.parquet
-.parquet
-*.pid
+.DS_Store

@@ -1,0 +1,34 @@
+
+# --- overlay & base pool (stable defaults) ---
+symbol_pool:
+  max_symbols: 18
+  min_quote_vol: 20000000      # 数值（不能写成 "2e7"）
+  base_pool_daily_size: 120    # 每日基础池规模（00:00 刷新）
+
+scan:
+  max_symbols_per_scan: 18
+  per_symbol_pause_ms: 350
+  tickers_cache_sec: 600
+
+overlay:
+  top_movers: 30               # 24h 绝对涨跌幅 Top-K 用于加热
+
+sampling:
+  overlay_decay_hours: 2       # 半衰期（小时）
+
+# --- overlay & base pool (stable defaults) ---
+symbol_pool:
+  max_symbols: 18
+  min_quote_vol: 20000000      # 数值（不能写成 "2e7"）
+  base_pool_daily_size: 120    # 每日基础池规模（00:00 刷新）
+
+scan:
+  max_symbols_per_scan: 18
+  per_symbol_pause_ms: 350
+  tickers_cache_sec: 600
+
+overlay:
+  top_movers: 30               # 24h 绝对涨跌幅 Top-K 用于加热
+
+sampling:
+  overlay_decay_hours: 2       # 半衰期（小时）

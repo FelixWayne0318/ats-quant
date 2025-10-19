@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  ats-quant:
+    image: python:3.11-slim
+    container_name: ats-quant
+    working_dir: /app
+    volumes:
+      - "./:/app"
+    environment:
+      - TZ=UTC
+    command: ["sh","-c","pip install --no-cache-dir -r requirements.txt && python -m ats.app"]
+    restart: unless-stopped

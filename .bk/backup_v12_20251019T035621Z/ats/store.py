@@ -1,7 +1,10 @@
-import sqlite3, os
+from pathlib import Path
+import sqlite3
 from loguru import logger
-os.makedirs("db", exist_ok=True)
-DB_PATH = "db/state.db"
+
+DB_DIR = Path("db")
+DATA_DIR = Path("data")
+DB_PATH = DB_DIR / "state.db"
 
 DDL = """
 CREATE TABLE IF NOT EXISTS cooldowns(
@@ -27,10 +30,17 @@ CREATE TABLE IF NOT EXISTS plans(
 );
 """
 
-def conn(): return sqlite3.connect(DB_PATH)
+def ensure_dirs():
+    DB_DIR.mkdir(exist_ok=True, parents=True)
+    DATA_DIR.mkdir(exist_ok=True, parents=True)
+
+def connect():
+    ensure_dirs()
+    return sqlite3.connect(DB_PATH)
 
 def ensure_schema():
-    with conn() as c:
-        c.executescript(DDL)
-        c.commit()
+    conn = connect()
+    with conn:
+        conn.executescript(DDL)
+    conn.close()
     logger.info("SQLite schema ensured at {}", DB_PATH)
