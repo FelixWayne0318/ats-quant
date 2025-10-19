@@ -8,6 +8,9 @@ KEY  = os.getenv("BINANCE_API_KEY", "")
 SEC  = os.getenv("BINANCE_API_SECRET", "")
 
 class BinanceFutures:
+    def depth(self, symbol: str, limit: int = 50):
+        """Orderbook depth snapshot (bids/asks). limit ∈ {5,10,20,50,100,500}."""
+        return self._get("/fapi/v1/depth", params={"symbol": symbol, "limit": int(limit)})
     def __init__(self, base=BASE, key=KEY, secret=SEC, timeout=10):
         self.base = base.rstrip("/")
         self.key = key

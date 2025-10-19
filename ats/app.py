@@ -9,7 +9,7 @@ from .notifier import send_text, send_text_plain
 from .store import ensure_schema
 from .binance import BinanceFutures
 from .scoring import score_symbol, aplus_pass
-from .gates import gate_A_true_breakout, gate_B_pullback_confirm, gate_C_crowded_check, gate_D_executable
+from .gates import gate_A_true_breakout, gate_B_pullback_confirm, gate_C_crowded_check, gate_D_executable, compute_c_metrics, gate_C_crowded_check_from_metrics, estimate_orderbook_metrics
 from .planner import make_plan
 from .risk import allow_new_open, switches
 from .runner import on_plan, place_orders, runner_tick
