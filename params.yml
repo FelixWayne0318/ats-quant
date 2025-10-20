@@ -1,17 +1,31 @@
 sampling:
   main_interval: 1h
   overlay_decay_hours: 2
+
 symbol_pool:
-  max_symbols: 36
+  # 每天 00:00 UTC 基础池规模（更大覆盖更广）
+  base_pool_daily_size: 260
+  # 每小时最终保留的“最强候选”上限（不是扫描上限）
+  max_symbols: 60
+  # 24h 报价额门槛（USDT）
   min_quote_vol: 20000000
-  base_pool_daily_size: 180
+
 scan:
-  max_symbols_per_scan: 180
-  per_symbol_pause_ms: 400
+  # 每小时参与扫描的最大币数（真正决定“扫多少”）
+  max_symbols_per_scan: 220
+  # 每个币之间暂停（毫秒）— 提高以降低限流风险
+  per_symbol_pause_ms: 600
+  # 兼容老字段名（与上面取同值）
+  per_symbol_delay_ms: 600
+  # 24h tickers 缓存秒数（减少频次）
   tickers_cache_sec: 900
+  # 命中 418/429/-1003 的退避时间（毫秒）
   backoff_ms_418_429_1003: 2500
+
 overlay:
-  top_movers: 60
+  # 叠加热点窗口规模（适当增大配合更广覆盖）
+  top_movers: 80
+
 thresholds:
   trend:
     ema30_slope_min: 0.25
@@ -59,35 +73,28 @@ thresholds:
         close_zone: 0.35
         pullback_atr_max: 0.5
         phaseA_pullback_tr: 0.45
-  C:
-    funding_pctl:
-      big: 90
-      small: 95
-    speed_pctl: 75
-    z_extreme:
-      big: 1.8
-      small: 2.3
-  D:
-    impact_bps: 10
-    obi_abs: 0.3
-    spread_bps: 25
-    room_atr_min: 0.6
-    cost_R_max: 0.12
+    C:
+      funding_pctl:
+        big: 90
+        small: 95
+      speed_pctl: 75
+      z_extreme:
+        big: 1.8
+        small: 2.3
+    D:
+      impact_bps: 10
+      obi_abs: 0.3
+      spread_bps: 25
+      room_atr_min: 0.6
+      cost_R_max: 0.12
+
 planner:
   weights:
-    default:
-    - 0.6
-    - 0.3
-    - 0.1
-    hi:
-    - 0.7
-    - 0.2
-    - 0.1
-    lo:
-    - 0.5
-    - 0.4
-    - 0.1
+    default: [0.6, 0.3, 0.1]
+    hi:      [0.7, 0.2, 0.1]
+    lo:      [0.5, 0.4, 0.1]
   tick_nudge_sec: 25
+
 risk:
   RISK_PCT: 0.005
   RISK_USDT_CAP: 6
