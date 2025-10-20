@@ -8,7 +8,7 @@ symbol_pool:
   # 每小时最终保留的“最强候选”上限（不是扫描上限）
   max_symbols: 60
   # 24h 报价额门槛（USDT）
-  min_quote_vol: 20000000
+  min_quote_vol: 15000000
 
 scan:
   # 每小时参与扫描的最大币数（真正决定“扫多少”）
